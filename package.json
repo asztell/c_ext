@@ -1,0 +1,19 @@
+{
+  "name": "node-c-extension",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "config": "npx node-gyp configure",
+    "build": "npx node-gyp build",
+    "rebuild": "npx node-gyp rebuild",
+    "start": "tsx index.ts"
+  },
+  "dependencies": {
+    "node-addon-api": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
