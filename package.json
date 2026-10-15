@@ -6,7 +6,8 @@
     "config": "npx node-gyp configure",
     "build": "npx node-gyp build",
     "rebuild": "npx node-gyp rebuild",
-    "start": "tsx index.ts"
+    "start": "tsx index.ts",
+    "docker:start": "docker compose run --rm benchmark"
   },
   "dependencies": {
     "node-addon-api": "^8.3.0"

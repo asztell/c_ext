@@ -1,0 +1,9 @@
+services:
+  benchmark:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_c_ext_benchmark
+    # Enable interactive terminal inputs inside the container
+    stdin_open: true
+    tty: true
