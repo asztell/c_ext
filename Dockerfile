@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt
 # 2. Leverage layer cache for dependencies (Only runs if package.json shifts)
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm \
-    npm ci
+    npm ci --omit=dev
 
 # 3. Copy source files necessary for building the C++ binary
 COPY binding.gyp addon.cpp ./
@@ -34,6 +34,6 @@ COPY --from=builder /app/build/ /app/build/
 
 # 7. Copy your TypeScript source files last 
 # (Since these change the most, placing them last prevents cache busting above)
-COPY index.ts jsMath.ts ./
+COPY index.ts jsMath.ts test.ts ./
 
 CMD ["npx", "tsx", "index.ts"]
