@@ -1,10 +1,11 @@
 {
   "configurations": [
     {
-      "name": "Mac-Node-API",
+      "name": "Mac",
       "includePath": [
         "${workspaceFolder}/**",
-        "${workspaceFolder}/node_modules/node-addon-api"
+        "${workspaceFolder}/node_modules/node-addon-api",
+        "${userHome}/Library/Caches/node-gyp/**"
       ],
       "defines": ["NAPI_DISABLE_CPP_EXCEPTIONS"],
       "macFrameworkPath": [

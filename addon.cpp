@@ -1,39 +1,67 @@
 #include <napi.h>
 #include <cmath>
+#include <vector>
+#include <thread>
 
-// Helper to check individual primes
-bool isPrime(int number) {
-    if (number <= 1) return false;
-    if (number == 2) return true;
-    if (number % 2 == 0) return false;
-    int boundary = std::sqrt(number);
-    for (int i = 3; i <= boundary; i += 2) {
-        if (number % i == 0) return false;
+// Worker function for a single thread processing a segment of numbers
+void countPrimesSegment(int start, int end, int& totalCount) {
+    int localCount = 0;
+    for (int i = start; i <= end; ++i) {
+        if (i <= 1) continue;
+        if (i == 2) { localCount++; continue; }
+        if (i % 2 == 0) continue;
+        
+        bool isPrime = true;
+        int boundary = std::sqrt(i);
+        for (int j = 3; j <= boundary; j += 2) {
+            if (i % j == 0) {
+                isPrime = false;
+                break;
+            }
+        }
+        if (isPrime) localCount++;
     }
-    return true;
+    totalCount = localCount;
 }
 
-// Heavy loop counting primes up to a maximum limit
+// Multithreaded Orchestrator
 Napi::Value CountPrimesWrapped(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
-    // Fix 1: Access the first argument via index info[0] to check type
+    // Fix: Access the first argument by index info[0]
     if (info.Length() < 1 || !info[0].IsNumber()) {
         Napi::TypeError::New(env, "Number expected").ThrowAsJavaScriptException();
         return env.Null();
     }
 
-    // Fix 2: Cast the specific argument info[0] to a Napi::Number
+    // Fix: Access the first argument by index info[0]
     int limit = info[0].As<Napi::Number>().Int32Value();
-    int count = 0;
+    if (limit < 2) return Napi::Number::New(env, 0);
 
-    for (int i = 2; i <= limit; ++i) {
-        if (isPrime(i)) {
-            count++;
-        }
+    // Determine hardware concurrency (number of CPU cores available)
+    unsigned int numThreads = std::thread::hardware_concurrency();
+    if (numThreads == 0) numThreads = 4; // Fallback
+
+    std::vector<std::thread> threads;
+    std::vector<int> counts(numThreads, 0);
+
+    // Divide the workload into segments
+    int range = limit / numThreads;
+    for (unsigned int i = 0; i < numThreads; ++i) {
+        int start = i * range + 1;
+        int end = (i == numThreads - 1) ? limit : (i + 1) * range;
+        
+        threads.push_back(std::thread(countPrimesSegment, start, end, std::ref(counts[i])));
     }
 
-    return Napi::Number::New(env, count);
+    // Wait for all threads to finish execution
+    int totalPrimes = 0;
+    for (unsigned int i = 0; i < numThreads; ++i) {
+        threads[i].join();
+        totalPrimes += counts[i];
+    }
+
+    return Napi::Number::New(env, totalPrimes);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
