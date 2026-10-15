@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import { countPrimesJS } from "./jsMath.js"; // Notice the .js extension for TS NodeNext resolution
+import { countPrimesJS } from "./jsMath.js";
 
 const require = createRequire(import.meta.url);
 
@@ -18,13 +18,19 @@ const nativeMath = require("./build/Release/math_addon.node") as MathAddon;
  * `parseInt` is deliberately avoided: it silently truncates input like "1e6"
  * down to 1 and happily accepts "12abc".
  */
-function parseLimit(answer: string): { ok: true; value: number } | { ok: false; message: string } {
+function parseLimit(
+  answer: string,
+): { ok: true; value: number } | { ok: false; message: string } {
   const trimmed = answer.trim();
-  if (trimmed === "") return { ok: false, message: "Please enter a valid positive integer." };
+  if (trimmed === "")
+    return { ok: false, message: "Please enter a valid positive integer." };
 
   const value = Number(trimmed);
   if (!Number.isFinite(value) || !Number.isInteger(value)) {
-    return { ok: false, message: "Please enter a whole number (for example: 10000000)." };
+    return {
+      ok: false,
+      message: "Please enter a whole number (for example: 10000000).",
+    };
   }
   if (value < 2) {
     return { ok: false, message: "Please enter an integer of at least 2." };
@@ -42,7 +48,8 @@ function parseLimit(answer: string): { ok: true; value: number } | { ok: false; 
 function formatSpeedup(timeJS: number, timeCPP: number): string {
   if (timeCPP <= 0) return "C++ finished too fast to measure a ratio.";
   const speedup = timeJS / timeCPP;
-  if (!Number.isFinite(speedup)) return "C++ finished too fast to measure a ratio.";
+  if (!Number.isFinite(speedup))
+    return "C++ finished too fast to measure a ratio.";
   return `C++ was approximately ${speedup.toFixed(1)}x faster than highly optimized JS.`;
 }
 
@@ -95,7 +102,9 @@ async function main() {
       );
       process.exitCode = 1;
     } else {
-      console.log(`✅ Both implementations agree: ${countJS.toLocaleString()} primes.`);
+      console.log(
+        `✅ Both implementations agree: ${countJS.toLocaleString()} primes.`,
+      );
     }
     console.log(formatSpeedup(timeJS, timeCPP));
   } catch (error) {
