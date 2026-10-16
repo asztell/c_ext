@@ -44,11 +44,13 @@ The ~17x figure above is the number that actually means something, because it no
 
 | Limit | JS (1 thread) | C++ (14 threads) | Speedup |
 |------:|--------------:|-----------------:|--------:|
-| 10,000,000 | 12.6ms | 1.7ms | 7.5x |
-| 200,000,000 | 179.1ms | 10.5ms | 17.1x |
-| 1,000,000,000 | 905.5ms | 47.0ms | 19.3x |
+| 10,000,000 | 10.9ms | 2.12ms | 5.2x |
+| 200,000,000 | 173.1ms | 10.20ms | 17.0x |
+| 1,000,000,000 | 888.2ms | 49.87ms | 17.8x |
 
 The ratio improves with input size because the native side's core count is only fully exploited once there is enough work to distribute.
+
+> **These figures are hardware-specific.** Reproduce them on your own machine with `npm run bench`, which prints the same table in pasteable markdown and verifies each count against known values.
 
 ---
 
@@ -101,6 +103,15 @@ Verify correctness of both implementations, including boundary and out-of-range 
 ```bash
 npm test
 ```
+
+### 5. Reproduce the Benchmark Numbers
+Run the scaling sweep that generates the table above:
+```bash
+npm run bench                 # default limits: 10M, 200M, 1B
+npx tsx bench.ts 1e6 1e8      # or your own limits
+```
+
+It warms up the JIT first, checks every result against known prime counts, and prints a markdown table ready to paste into this README.
 
 ---
 

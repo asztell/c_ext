@@ -8,6 +8,7 @@
     "rebuild": "npx node-gyp rebuild",
     "start": "tsx index.ts",
     "test": "tsx test.ts",
+    "bench": "tsx bench.ts",
     "docker:start": "docker compose run --rm benchmark"
   },
   "dependencies": {

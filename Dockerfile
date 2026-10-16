@@ -34,6 +34,6 @@ COPY --from=builder /app/build/ /app/build/
 
 # 7. Copy your TypeScript source files last 
 # (Since these change the most, placing them last prevents cache busting above)
-COPY index.ts jsMath.ts test.ts ./
+COPY index.ts jsMath.ts test.ts bench.ts ./
 
 CMD ["npx", "tsx", "index.ts"]
